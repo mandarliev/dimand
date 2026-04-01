@@ -5,7 +5,7 @@ import { FileBreadcrumbs } from "./file-breadcrumbs";
 import { TopNavigation } from "./top-navigation";
 import Image from "next/image";
 import { CodeEditor } from "./code-editor";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 const DEBOUNCE_MS = 1500;
 
@@ -21,6 +21,15 @@ export default function EditorView({
 
   const isActiveFileBinary = activeFile && activeFile.storageId;
   const isActiveFileText = activeFile && !activeFile.storageId;
+
+  // Clean up pending debounced updates on unmount or file change
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [activeTabId]);
 
   return (
     <div className="h-full flex flex-col">
